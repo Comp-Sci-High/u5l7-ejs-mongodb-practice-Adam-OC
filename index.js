@@ -6,7 +6,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 
 const app = express();
-
+// app.set(staticFile(__dirname + ))
 app.use((req, res, next) => {
   console.log(req.method, req.url);
   next();
@@ -16,7 +16,7 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 // Set the view engine
-
+app.set("view engine","ejs")
 
 // Define the schema for a planet called planetSchema
 // Add the following attributes
@@ -27,11 +27,24 @@ app.use(express.json());
 // description (string)
 // orbital (number)
 
+const planetSchema = new mongoose.Schema({
+  name:{type: String, required: true, unique:true},
+  distance:{type: Number },
+  diameter:{type: Number },
+  imagePath:{type: String },
+  description:{type: String},
+  orbital:{type: String}
+})
+
 // Define the model called Planet using planetSchema 
+const Planet = mongoose.model("Planet", planetSchema, "Planets")
 
 // Create a get route to / that renders home.ejs which renders all the planets into cards
 // e.g. /info/Mercury sends back Mercury's info page
-
+app.get("/", async(req,res)=>{
+  const all = await Planet.find({})
+  res.render("home.ejs", {all})
+})
 
 // Go into home.ejs and plug in the attributes
 
@@ -48,7 +61,7 @@ app.use(express.json());
 async function startServer() {
     // add your SRV string with a database called planets
   
-    await mongoose.connect("...");
+    await mongoose.connect("mongodb+srv://SE12:CSH2025@adamo8.b6ydo.mongodb.net/Planet?retryWrites=true&w=majority&appName=AdamO8");
 
     // Uncomment the following code, and only run it once!
     // const planets = [
